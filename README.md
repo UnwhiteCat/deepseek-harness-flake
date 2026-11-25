@@ -59,4 +59,4 @@ nixpkgs.overlays = [ deepseek-harness.overlays.default ];
 
 ## 许可
 
-本打包配方遵循仓库自身约定；DeepSeek Harness 本体遵循上游 MIT 协议（见 `package.nix` 中 `meta.license`）。
+本打包配方仓库采用 [MIT License](LICENSE)；DeepSeek Harness 本体遵循上游 MIT 协议（见 `package.nix` 中 `meta.license`）。

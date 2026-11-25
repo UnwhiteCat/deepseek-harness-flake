@@ -1,22 +1,24 @@
 # deepseek-harness-nix
 
-[DeepSeek Harness (`dsh`)](https://github.com/deepseek-ai/deepseek-harness) 的 Nix 源码构建 flake（`x86_64-linux`），包含：
+English | [简体中文](README.zh-CN.md)
 
-- `dsh`：CLI
-- `dsh-web`：Web UI（默认与桌面版共用 `~/.local/state/dsh-desktop` 作为 `DSH_HOME`）
-- `dsh-desktop`：Electron 桌面应用（含 Landlock 沙箱后端与 primary runtime Python/Node 环境）
+Nix source-build flake (`x86_64-linux`) for [DeepSeek Harness (`dsh`)](https://github.com/deepseek-ai/deepseek-harness), providing:
 
-## 直接使用
+- `dsh`: CLI
+- `dsh-web`: Web UI (shares `~/.local/state/dsh-desktop` as `DSH_HOME` with the desktop app by default)
+- `dsh-desktop`: Electron desktop app (with Landlock sandbox backend and primary runtime Python/Node environment)
+
+## Quick Start
 
 ```bash
-# 临时运行 CLI
+# Run CLI without installing
 nix run github:<owner>/<repo> -- --help
 
-# 构建完整包（输出 bin/dsh, bin/dsh-web, bin/dsh-desktop）
+# Build the full package (outputs bin/dsh, bin/dsh-web, bin/dsh-desktop)
 nix build github:<owner>/<repo>
 ```
 
-## 在 NixOS / Home Manager 中集成
+## NixOS / Home Manager Integration
 
 ```nix
 {
@@ -27,14 +29,14 @@ nix build github:<owner>/<repo>
 }
 ```
 
-### 方式一：通过 `lib.mkPackage`（推荐，可传入 Wayland 缩放参数）
+### Option 1: Via `lib.mkPackage` (Recommended — supports Wayland scaling)
 
 ```nix
 let
   dsh = deepseek-harness.lib.mkPackage {
     inherit pkgs;
-    # Wayland 分数缩放（如 niri 1.6）时建议设为 1 / 合成器缩放，例如 "0.625"；
-    # 也可按需传其他值，默认 "1"。
+    # On fractionally scaled Wayland compositors (e.g. niri at 1.6x), set to
+    # 1 / compositor_scale (e.g. "0.625"); defaults to "1".
     desktopScaleFactor = "1";
   };
 in
@@ -43,20 +45,21 @@ in
 }
 ```
 
-### 方式二：通过 `overlays.default`
+### Option 2: Via `overlays.default`
 
 ```nix
 nixpkgs.overlays = [ deepseek-harness.overlays.default ];
-# 之后可使用 pkgs.dsh / pkgs.deepseek-harness
+# Then use pkgs.dsh / pkgs.deepseek-harness
 ```
 
-## 文件说明
+## Files
 
-- `flake.nix`：独立 flake 入口（暴露 `packages`、`overlays.default`、`lib.mkPackage`）
-- `package.nix`：主构建配方，具体取舍与手工升级说明见文件头部注释
-- `lock.json`：上游 `scripts/primary-runtime/lock.json` 副本
-- `runtime-python.nix`：由 `lock.json` 生成的 Python 3.12 + office wheels 配方（勿用 `nix fmt` 格式化）
+- `flake.nix`: Standalone flake entry point (`packages`, `overlays.default`, `lib.mkPackage`)
+- `package.nix`: Main build recipe (see header comments for design decisions and manual upgrade steps)
+- `lock.json`: Copy of upstream `scripts/primary-runtime/lock.json`
+- `runtime-python.nix`: Generated Python 3.12 + office wheels recipe from `lock.json` (do not format with `nix fmt`)
+- `LICENSE`: MIT License for this packaging repository
 
-## 许可
+## License
 
-本打包配方仓库采用 [MIT License](LICENSE)；DeepSeek Harness 本体遵循上游 MIT 协议（见 `package.nix` 中 `meta.license`）。
+This packaging repository is licensed under the [MIT License](LICENSE). DeepSeek Harness itself is licensed under the upstream MIT License (see `meta.license` in `package.nix`).
